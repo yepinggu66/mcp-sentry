@@ -27,3 +27,7 @@ mcp-sentry = "mcp_sentry:main"
 Homepage = "https://github.com/yepinggu66/mcp-sentry"
 "Bug Tracker" = "https://github.com/yepinggu66/mcp-sentry/issues"
 "Interactive Sandbox" = "https://pingguye.cn/stackverdict/agentwall"
+
+[tool.setuptools]
+py-modules = ["mcp_sentry"]
+
