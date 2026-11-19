@@ -1,0 +1,36 @@
+# MCP-Sentry v2.0 Enterprise Policy-as-Code Example
+# Changes to this file are hot-reloaded automatically without restarting the proxy.
+
+max_identical_calls: 3
+loop_window_seconds: 60.0
+max_session_calls: 200
+max_calls_per_minute: 60
+
+block_tool_poisoning: true
+block_rug_pull: true
+block_destructive_commands: true
+block_secret_exfiltration: true
+enable_taint_tracking: true
+redact_response_secrets: true
+enable_entropy_scan: true
+entropy_threshold: 4.6
+
+# High-risk tools suspended for Human-in-the-Loop approval in HTTP proxy mode
+require_approval_tools:
+  - execute_sql
+  - run_command
+  - shell_exec
+  - delete_file
+  - send_email
+  - transfer_funds
+
+approval_timeout_seconds: 60.0
+
+denied_paths:
+  - .env
+  - .ssh
+  - id_rsa
+  - id_ed25519
+  - /etc/shadow
+  - .aws/credentials
+  - .kube/config

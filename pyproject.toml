@@ -4,12 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-sentry"
-version = "0.1.0"
-description = "Zero-Overhead Circuit Breaker & Whitebox Security Proxy for Model Context Protocol (MCP)"
+version = "2.0.0"
+description = "Zero-Trust Security Gateway, Bidirectional Firewall & Cryptographic Audit Proxy for Model Context Protocol (MCP)"
 readme = "README.md"
 authors = [{ name = "Ye Yongping", email = "yepinggu66@gmail.com" }]
 license = { text = "MIT" }
-keywords = ["mcp", "model-context-protocol", "circuit-breaker", "ai-agents", "security", "claude", "cursor"]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "ai-security",
+    "firewall",
+    "tool-poisoning",
+    "rug-pull",
+    "circuit-breaker",
+    "dlp",
+    "audit-ledger",
+    "claude",
+    "cursor",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -21,13 +33,12 @@ requires-python = ">=3.8"
 dependencies = []
 
 [project.scripts]
-mcp-sentry = "mcp_sentry:main"
+mcp-sentry = "mcp_sentry.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/yepinggu66/mcp-sentry"
 "Bug Tracker" = "https://github.com/yepinggu66/mcp-sentry/issues"
-"Interactive Sandbox" = "https://pingguye.cn/stackverdict/agentwall"
+"Live Interactive Sandbox" = "https://pingguye.cn/stackverdict/agentwall"
 
-[tool.setuptools]
-py-modules = ["mcp_sentry"]
-
+[tool.setuptools.packages.find]
+include = ["mcp_sentry*"]
