@@ -10,6 +10,7 @@ from mcp_sentry.circuit_breaker import CircuitBreaker
 from mcp_sentry.detectors import SchemaLockStore, ThreatEngine
 from mcp_sentry.ledger import AuditLedger
 from mcp_sentry.policy import PolicyManager, SentryPolicy
+from mcp_sentry.proxy_http import ApprovalQueue
 
 
 class TestMCPSentryV2(unittest.TestCase):
@@ -122,6 +123,40 @@ for line in sys.stdin:
             valid, count, _ = ledger.verify_chain()
             self.assertTrue(valid)
             self.assertGreaterEqual(count, 4)
+
+    def test_hitl_approval_queue_exposes_triggered_policy(self):
+        import threading
+        q = ApprovalQueue()
+        result_holder = {}
+
+        def waiter():
+            result_holder["approved"] = q.request_approval(
+                tool="execute_sql",
+                arguments={"sql": "UPDATE users SET role='admin'"},
+                timeout=5.0,
+                triggered_policy="require_approval_tools",
+                category="HITL_GATE",
+                severity="MEDIUM",
+                reason="High-risk tool 'execute_sql' requires Human-in-the-Loop approval",
+            )
+
+        t = threading.Thread(target=waiter)
+        t.start()
+        pending = []
+        for _ in range(50):
+            pending = q.list_pending()
+            if pending:
+                break
+            import time
+            time.sleep(0.02)
+
+        self.assertEqual(len(pending), 1)
+        self.assertEqual(pending[0]["triggered_policy"], "require_approval_tools")
+        self.assertEqual(pending[0]["severity"], "MEDIUM")
+        self.assertIn("execute_sql", pending[0]["reason"])
+        q.decide(pending[0]["id"], True)
+        t.join(timeout=2)
+        self.assertTrue(result_holder.get("approved"))
 
 
 if __name__ == "__main__":

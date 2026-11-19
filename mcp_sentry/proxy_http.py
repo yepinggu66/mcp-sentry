@@ -61,8 +61,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 
   <h2>Human-in-the-Loop Approval Gate (Suspended High-Risk Calls)</h2>
   <table>
-    <thead><tr><th>Approval ID</th><th>Tool</th><th>Arguments</th><th>Action</th></tr></thead>
-    <tbody id="pending-body"><tr><td colspan="4" style="color:#64748b">No pending approvals.</td></tr></tbody>
+    <thead><tr><th>Approval ID</th><th>Tool</th><th>Triggered Policy &amp; Reason</th><th>Arguments</th><th>Action</th></tr></thead>
+    <tbody id="pending-body"><tr><td colspan="5" style="color:#64748b">No pending approvals.</td></tr></tbody>
   </table>
 
   <h2>Live Tool-Call Firewall Stream (Hash-Chained Audit Ledger)</h2>
@@ -91,12 +91,17 @@ async function refresh() {
 
     const pb = document.getElementById('pending-body');
     if (!pen.pending.length) {
-      pb.innerHTML = '<tr><td colspan="4" style="color:#64748b">No pending high-risk tool approvals.</td></tr>';
+      pb.innerHTML = '<tr><td colspan="5" style="color:#64748b">No pending high-risk tool approvals.</td></tr>';
     } else {
       pb.innerHTML = pen.pending.map(p => `
         <tr>
           <td>${p.id}</td>
           <td><strong>${p.tool}</strong></td>
+          <td>
+            <span class="REDACT">[${p.severity || 'MEDIUM'}]</span>
+            <code>${p.triggered_policy || 'require_approval_tools'}</code><br/>
+            <span style="color:#94a3b8;font-size:12px">${p.reason || ''}</span>
+          </td>
           <td><code>${JSON.stringify(p.arguments).slice(0,120)}</code></td>
           <td>
             <button class="btn-ok" onclick="decide('${p.id}','approve')">APPROVE</button>
@@ -134,13 +139,26 @@ class ApprovalQueue:
         self._lock = threading.Lock()
         self._items: Dict[str, Dict[str, Any]] = {}
 
-    def request_approval(self, tool: str, arguments: Any, timeout: float) -> bool:
+    def request_approval(
+        self,
+        tool: str,
+        arguments: Any,
+        timeout: float,
+        triggered_policy: str = "require_approval_tools",
+        category: str = "HITL_GATE",
+        severity: str = "MEDIUM",
+        reason: str = "",
+    ) -> bool:
         aid = f"apr-{uuid.uuid4().hex[:8]}"
         ev = threading.Event()
         item = {
             "id": aid,
             "tool": tool,
             "arguments": arguments,
+            "triggered_policy": triggered_policy,
+            "category": category,
+            "severity": severity,
+            "reason": reason,
             "created_at": time.time(),
             "event": ev,
             "approved": False,
@@ -164,7 +182,16 @@ class ApprovalQueue:
     def list_pending(self):
         with self._lock:
             return [
-                {"id": k, "tool": v["tool"], "arguments": v["arguments"], "created_at": v["created_at"]}
+                {
+                    "id": k,
+                    "tool": v["tool"],
+                    "arguments": v["arguments"],
+                    "triggered_policy": v.get("triggered_policy", ""),
+                    "category": v.get("category", ""),
+                    "severity": v.get("severity", "MEDIUM"),
+                    "reason": v.get("reason", ""),
+                    "created_at": v["created_at"],
+                }
                 for k, v in self._items.items()
             ]
 
@@ -291,7 +318,13 @@ def run_http_proxy(
 
                 if verdict.action == "REQUIRE_APPROVAL":
                     approved = approvals.request_approval(
-                        tool_name, tool_args, timeout=cur_policy.approval_timeout_seconds
+                        tool_name,
+                        tool_args,
+                        timeout=cur_policy.approval_timeout_seconds,
+                        triggered_policy=verdict.matched_rule or "require_approval_tools",
+                        category=verdict.category,
+                        severity=verdict.severity,
+                        reason=verdict.reason,
                     )
                     if not approved:
                         ledger.record(
