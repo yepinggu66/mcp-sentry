@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-sentry"
+version = "0.1.0"
+description = "Zero-Overhead Circuit Breaker & Whitebox Security Proxy for Model Context Protocol (MCP)"
+readme = "README.md"
+authors = [{ name = "Ye Yongping", email = "yepinggu66@gmail.com" }]
+license = { text = "MIT" }
+keywords = ["mcp", "model-context-protocol", "circuit-breaker", "ai-agents", "security", "claude", "cursor"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+mcp-sentry = "mcp_sentry:main"
+
+[project.urls]
+Homepage = "https://github.com/yepinggu66/mcp-sentry"
+"Bug Tracker" = "https://github.com/yepinggu66/mcp-sentry/issues"
+"Interactive Sandbox" = "https://pingguye.cn/stackverdict/agentwall"
