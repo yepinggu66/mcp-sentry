@@ -39,6 +39,8 @@ class SentryPolicy:
         ]
     )
     approval_timeout_seconds: float = 60.0
+    approval_webhook_url: str = ""
+    public_base_url: str = ""
 
     # Access controls
     allowed_tools: List[str] = field(default_factory=list)  # empty = allow all except denied
@@ -95,6 +97,8 @@ class SentryPolicy:
             "entropy_threshold": self.entropy_threshold,
             "require_approval_tools": self.require_approval_tools,
             "approval_timeout_seconds": self.approval_timeout_seconds,
+            "approval_webhook_url": self.approval_webhook_url,
+            "public_base_url": self.public_base_url,
             "allowed_tools": self.allowed_tools,
             "denied_tools": self.denied_tools,
             "allowed_paths": self.allowed_paths,

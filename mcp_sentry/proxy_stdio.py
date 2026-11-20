@@ -102,6 +102,18 @@ def run_stdio_proxy(
                 cur_policy = policy_manager.policy
                 engine.policy = cur_policy
 
+                # 0. Track mid-session dynamic tool list mutations (`notifications/tools/list_changed`)
+                if msg.get("method") == "notifications/tools/list_changed":
+                    sys.stderr.write("[MCP-Sentry NOTICE] Server emitted notifications/tools/list_changed; next tools/list will be re-scanned & verified against SHA-256 schema locks.\n")
+                    ledger.record(
+                        event_type="TOOLS_LIST_CHANGED",
+                        action="ALLOW",
+                        category="SCHEMA_WATCH",
+                        severity="MEDIUM",
+                        reason="Server notified mid-session tools/list_changed; re-verification armed",
+                        session_id=session_id,
+                    )
+
                 # 1. Inspect `tools/list` responses for Tool Poisoning & Rug-Pull
                 if req_meta and req_meta.get("method") == "tools/list" and isinstance(msg.get("result"), dict):
                     tools = msg["result"].get("tools")

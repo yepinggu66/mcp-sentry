@@ -6,7 +6,7 @@ Author: Ye Yongping (yepinggu66@gmail.com)
 Repository: https://github.com/yepinggu66/mcp-sentry
 """
 
-VERSION = "2.0.1"
+VERSION = "2.1.0"
 
 from .policy import SentryPolicy, PolicyManager
 from .detectors import ThreatEngine, ThreatVerdict, SchemaLockStore

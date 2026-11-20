@@ -158,6 +158,69 @@ for line in sys.stdin:
         t.join(timeout=2)
         self.assertTrue(result_holder.get("approved"))
 
+    def test_remote_approval_webhook_delivery(self):
+        import threading
+        import time
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+        received = []
+
+        class MockWebhook(BaseHTTPRequestHandler):
+            def log_message(self, format, *args):
+                return
+
+            def do_POST(self):
+                n = int(self.headers.get("Content-Length", "0"))
+                received.append(json.loads(self.rfile.read(n).decode("utf-8")))
+                self.send_response(200)
+                self.end_headers()
+
+        srv = ThreadingHTTPServer(("127.0.0.1", 0), MockWebhook)
+        port = srv.server_address[1]
+        st = threading.Thread(target=srv.serve_forever, daemon=True)
+        st.start()
+
+        q = ApprovalQueue()
+        result_holder = {}
+
+        def waiter():
+            result_holder["approved"] = q.request_approval(
+                tool="transfer_funds",
+                arguments={"amount": 25000, "to": "vendor-01"},
+                timeout=5.0,
+                triggered_policy="require_approval_tools",
+                category="HITL_GATE",
+                severity="HIGH",
+                reason="High-risk tool 'transfer_funds' held for remote review",
+                webhook_url=f"http://127.0.0.1:{port}/hook",
+                base_url="https://sentry.example.com",
+            )
+
+        wt = threading.Thread(target=waiter)
+        wt.start()
+
+        for _ in range(100):
+            if received and q.list_pending():
+                break
+            time.sleep(0.02)
+
+        pending = q.list_pending()
+        self.assertEqual(len(received), 1)
+        hook_msg = received[0]
+        self.assertEqual(hook_msg["tool"], "transfer_funds")
+        self.assertEqual(hook_msg["triggered_policy"], "require_approval_tools")
+        self.assertEqual(hook_msg["arguments"]["amount"], 25000)
+        self.assertTrue(hook_msg["review_url"].startswith("https://sentry.example.com/sentry/ui#apr-"))
+        self.assertIn(hook_msg["approval_id"], hook_msg["review_url"])
+        self.assertIn("text", hook_msg)
+        self.assertIn("content", hook_msg)
+
+        q.decide(pending[0]["id"], False)
+        wt.join(timeout=2)
+        srv.shutdown()
+        srv.server_close()
+        self.assertFalse(result_holder.get("approved"))
+
 
 if __name__ == "__main__":
     unittest.main()

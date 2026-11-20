@@ -93,9 +93,11 @@ async function refresh() {
     if (!pen.pending.length) {
       pb.innerHTML = '<tr><td colspan="5" style="color:#64748b">No pending high-risk tool approvals.</td></tr>';
     } else {
-      pb.innerHTML = pen.pending.map(p => `
-        <tr>
-          <td>${p.id}</td>
+      pb.innerHTML = pen.pending.map(p => {
+        const isTarget = window.location.hash === '#' + p.id;
+        return `
+        <tr id="${p.id}" style="${isTarget ? 'background:#1e3a5f;outline:2px solid #60a5fa;' : ''}">
+          <td><code>${p.id}</code></td>
           <td><strong>${p.tool}</strong></td>
           <td>
             <span class="REDACT">[${p.severity || 'MEDIUM'}]</span>
@@ -107,7 +109,8 @@ async function refresh() {
             <button class="btn-ok" onclick="decide('${p.id}','approve')">APPROVE</button>
             <button class="btn-no" onclick="decide('${p.id}','deny')">DENY</button>
           </td>
-        </tr>`).join('');
+        </tr>`;
+      }).join('');
     }
 
     const eb = document.getElementById('events-body');
@@ -132,6 +135,40 @@ setInterval(refresh, 1500);
 """
 
 
+def dispatch_approval_webhook(webhook_url: str, payload: Dict[str, Any]) -> None:
+    """
+    Sends a Slack/Discord/generic JSON webhook alert for a suspended HITL request.
+    Includes triggered policy rule, tool arguments, and direct link to the exact request.
+    """
+    if not webhook_url:
+        return
+    summary = (
+        f"[MCP-Sentry HITL Hold] Tool `{payload['tool']}` suspended by policy `{payload['triggered_policy']}` "
+        f"({payload['severity']})\n"
+        f"Reason: {payload['reason']}\n"
+        f"Args: `{json.dumps(payload['arguments'], ensure_ascii=False)[:300]}`\n"
+        f"Review exact request: {payload['review_url']}"
+    )
+    body = {
+        "text": summary,      # Slack compatible
+        "content": summary,   # Discord compatible
+        "event": "mcp_sentry.hitl_approval_required",
+        **payload,
+    }
+    raw = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        webhook_url,
+        data=raw,
+        headers={"Content-Type": "application/json", "User-Agent": "MCP-Sentry/2.1.0"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5):
+            pass
+    except Exception:
+        pass
+
+
 class ApprovalQueue:
     """Thread-safe Human-in-the-Loop suspension queue for high-risk MCP tool calls."""
 
@@ -148,9 +185,13 @@ class ApprovalQueue:
         category: str = "HITL_GATE",
         severity: str = "MEDIUM",
         reason: str = "",
+        webhook_url: str = "",
+        base_url: str = "http://127.0.0.1:8787",
     ) -> bool:
         aid = f"apr-{uuid.uuid4().hex[:8]}"
         ev = threading.Event()
+        clean_base = base_url.rstrip("/")
+        review_url = f"{clean_base}/sentry/ui#{aid}"
         item = {
             "id": aid,
             "tool": tool,
@@ -159,12 +200,33 @@ class ApprovalQueue:
             "category": category,
             "severity": severity,
             "reason": reason,
+            "review_url": review_url,
             "created_at": time.time(),
             "event": ev,
             "approved": False,
         }
         with self._lock:
             self._items[aid] = item
+
+        if webhook_url:
+            webhook_payload = {
+                "approval_id": aid,
+                "tool": tool,
+                "arguments": arguments,
+                "triggered_policy": triggered_policy,
+                "category": category,
+                "severity": severity,
+                "reason": reason,
+                "review_url": review_url,
+                "approve_endpoint": f"{clean_base}/sentry/api/approve?id={aid}",
+                "deny_endpoint": f"{clean_base}/sentry/api/deny?id={aid}",
+            }
+            threading.Thread(
+                target=dispatch_approval_webhook,
+                args=(webhook_url, webhook_payload),
+                daemon=True,
+            ).start()
+
         ev.wait(timeout=timeout)
         with self._lock:
             finished = self._items.pop(aid, item)
@@ -203,6 +265,8 @@ def run_http_proxy(
     policy_manager: PolicyManager,
     ledger: AuditLedger,
     lock_store: Optional[SchemaLockStore] = None,
+    webhook_url: str = "",
+    public_base_url: str = "",
 ):
     pol = policy_manager.policy
     if lock_store is None:
@@ -317,6 +381,8 @@ def run_http_proxy(
                     return
 
                 if verdict.action == "REQUIRE_APPROVAL":
+                    active_webhook = webhook_url or cur_policy.approval_webhook_url
+                    active_base = public_base_url or cur_policy.public_base_url or f"http://{host}:{port}"
                     approved = approvals.request_approval(
                         tool_name,
                         tool_args,
@@ -325,6 +391,8 @@ def run_http_proxy(
                         category=verdict.category,
                         severity=verdict.severity,
                         reason=verdict.reason,
+                        webhook_url=active_webhook,
+                        base_url=active_base,
                     )
                     if not approved:
                         ledger.record(

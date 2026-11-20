@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-sentry"
-version = "2.0.1"
+version = "2.1.0"
 description = "Zero-Trust Security Gateway, Bidirectional Firewall & Cryptographic Audit Proxy for Model Context Protocol (MCP)"
 readme = "README.md"
 authors = [{ name = "Ye Yongping", email = "yepinggu66@gmail.com" }]

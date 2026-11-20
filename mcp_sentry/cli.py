@@ -80,6 +80,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p_proxy.add_argument("--port", type=int, default=8787, help="Bind port (default: 8787)")
     p_proxy.add_argument("--policy", type=str, default="", help="Path to sentry.yaml / sentry.json")
     p_proxy.add_argument("--audit-dir", type=str, default="", help="Directory for cryptographic audit ledger")
+    p_proxy.add_argument("--webhook-url", type=str, default="", help="Slack/Discord/generic webhook URL for remote HITL approval alerts")
+    p_proxy.add_argument("--public-url", type=str, default="", help="Public base URL used to build direct deep-links to held requests")
 
     # 3. bench
     sub.add_parser("bench", help="Run built-in 24-vector MCP red-team security benchmark")
@@ -148,6 +150,8 @@ def main(argv=None):
             port=args.port,
             policy_manager=pm,
             ledger=ledger,
+            webhook_url=args.webhook_url,
+            public_base_url=args.public_url,
         )
         return 0
 
