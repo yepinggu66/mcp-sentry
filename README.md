@@ -132,9 +132,12 @@ Verified directly via `mcp-sentry bench` and `python -m unittest discover -s tes
 
 ---
 
-## Live Interactive Sandbox & Enterprise Licensing
+## Live Interactive Sandbox, Pro Pack & Enterprise Licensing
 
 - **Online Security Sandbox**: [https://pingguye.cn/stackverdict/agentwall](https://pingguye.cn/stackverdict/agentwall)
-- **Commercial / Enterprise License & Source Code Buyout**:
-  - Need custom SSO/RBAC, multi-tenant Slack/Teams HITL approval bots, SIEM/OTLP pipelines, or full commercial IP licensing?
-  - Contact: **yepinggu66@gmail.com**
+- **⚡ Developer Pro Rule Pack & HITL Templates ($49 one-time)**:
+  - 50+ Enterprise `sentry.yaml` policy packs, Slack/Discord remote HITL approval webhook templates, SOC2/EU AI Act audit exporter, and priority issue support.
+  - 👉 [Instant PayPal Checkout ($49)](https://www.paypal.com/ncp/payment/7G6M6X7889A2Q)
+- **🏛️ Commercial License ($9,800) & Full Source / IP Buyout ($24,800)**:
+  - Need commercial redistribution rights, multi-tenant SSO/RBAC, SIEM/OTLP pipelines, or full turnkey IP acquisition via Escrow?
+  - Submit an instant LOI on [AgentWall](https://pingguye.cn/stackverdict/agentwall) or email **yepinggu66@gmail.com**
