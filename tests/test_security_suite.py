@@ -221,6 +221,22 @@ for line in sys.stdin:
         srv.server_close()
         self.assertFalse(result_holder.get("approved"))
 
+    def test_yaml_parser_preserves_hash_inside_quotes(self):
+        from mcp_sentry.policy import _parse_simple_yaml
+
+        sample = (
+            'approval_webhook_url: "https://hooks.example.com/hitl#alerts-channel" # inline comment\n'
+            "public_base_url: 'https://sentry.local:8787/ui#section' # single-quoted\n"
+            "max_identical_calls: 5 # trailing comment\n"
+            "denied_paths:\n"
+            '  - "/etc/app#1/secret" # list item comment\n'
+        )
+        parsed = _parse_simple_yaml(sample)
+        self.assertEqual(parsed["approval_webhook_url"], "https://hooks.example.com/hitl#alerts-channel")
+        self.assertEqual(parsed["public_base_url"], "https://sentry.local:8787/ui#section")
+        self.assertEqual(parsed["max_identical_calls"], 5)
+        self.assertEqual(parsed["denied_paths"], ["/etc/app#1/secret"])
+
 
 if __name__ == "__main__":
     unittest.main()

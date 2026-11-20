@@ -108,12 +108,33 @@ class SentryPolicy:
         }
 
 
+def _strip_yaml_comment(raw_line: str) -> str:
+    """Strip inline '#' comments only when outside single/double quotes."""
+    in_single = False
+    in_double = False
+    escaped = False
+    for i, ch in enumerate(raw_line):
+        if escaped:
+            escaped = False
+            continue
+        if ch == "\\" and in_double:
+            escaped = True
+            continue
+        if ch == "'" and not in_double:
+            in_single = not in_single
+        elif ch == '"' and not in_single:
+            in_double = not in_double
+        elif ch == "#" and not in_single and not in_double:
+            return raw_line[:i].rstrip()
+    return raw_line.rstrip()
+
+
 def _parse_simple_yaml(text: str) -> Dict[str, Any]:
     """Minimal zero-dependency YAML subset parser for flat keys and string lists."""
     result: Dict[str, Any] = {}
     current_list_key: Optional[str] = None
     for raw_line in text.splitlines():
-        line = raw_line.split("#", 1)[0].rstrip()
+        line = _strip_yaml_comment(raw_line)
         if not line.strip():
             continue
         stripped = line.lstrip()
