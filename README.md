@@ -140,4 +140,4 @@ Verified directly via `mcp-sentry bench` and `python -m unittest discover -s tes
   - 👉 [Instant PayPal Checkout ($49)](https://www.paypal.com/ncp/payment/7G6M6X7889A2Q)
 - **🏛️ Commercial License ($9,800) & Full Source / IP Buyout ($29,800)**:
   - Need commercial redistribution rights, multi-tenant SSO/RBAC, SIEM/OTLP pipelines, or full turnkey IP acquisition via Escrow?
-  - Submit an instant LOI on [AgentWall](https://pingguye.cn/stackverdict/agentwall) or email **yepinggu66@gmail.com**
+  - Submit an instant LOI on [AgentWall](https://pingguye.cn/stackverdict/agentwall) or email **yepinggu6@gmail.com**
