@@ -57,7 +57,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
     <button class="btn-act" style="background:#f59e0b;color:#0f172a" onclick="triggerRollback()">⏪ 1-Click Time-Machine Rollback</button>
     <a href="/sentry/api/soc2.html" target="_blank" style="background:#1e293b;color:#93c5fd;border:1px solid #3b82f6">📄 Export SOC2 Audit Certificate</a>
     <a href="https://www.paypal.com/ncp/payment/7G6M6X7889A2Q" target="_blank" style="background:#10b981;color:#022c22">⚡ Unlock Pro ($49)</a>
-    <a href="https://pingguye.cn/stackverdict/agentwall" target="_blank" style="background:#3b82f6;color:#fff">🏛️ Full IP Buyout ($24,800)</a>
+    <a href="https://pingguye.cn/stackverdict/agentwall" target="_blank" style="background:#3b82f6;color:#fff">🏛️ Full IP Buyout ($30,000)</a>
   </div>
 </div>
 <header>

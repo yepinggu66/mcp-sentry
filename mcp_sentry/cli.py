@@ -103,7 +103,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p_rb.add_argument("--audit-dir", type=str, default="", help="Base audit directory containing shadow_vault")
 
     # 4. activate (Commercial License)
-    p_act = sub.add_parser("activate", help="⚡ Activate a Pro ($49) or Enterprise ($24,800) License Key")
+    p_act = sub.add_parser("activate", help="⚡ Activate a Pro ($49) or Enterprise ($30,000) License Key")
     p_act.add_argument("key", type=str, help="License key string (SENTRY-V3-PRO-...)")
 
     # 5. status
@@ -187,7 +187,7 @@ def main(argv=None):
             print("-" * 74)
             print(f"  ⚡ Upgrade to Pro ($49) — Unlock Unlimited Rollbacks, Smart Token Diet & SOC2 Seal:")
             print(f"     {PAYPAL_PRO_URL}")
-            print(f"  🏛️ Full IP & Turnkey Buyout ($24,800): {BUYOUT_CONSOLE_URL}")
+            print(f"  🏛️ Full IP & Turnkey Buyout ($30,000): {BUYOUT_CONSOLE_URL}")
         print("=" * 74)
         return 0
 

@@ -5,7 +5,9 @@
 [![Version](https://img.shields.io/badge/version-3.0.0-emerald.svg)](https://github.com/yepinggu66/mcp-sentry/releases)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0%20(Pure%20Python)-blue.svg)](#quick-start)
 [![Benchmark](https://img.shields.io/badge/red--team%20benchmark-24%2F24%20blocked-brightgreen.svg)](#24-vector-red-team-benchmark)
-[![License](https://img.shields.io/badge/License-Open--Core%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-24800)
+[![License](https://img.shields.io/badge/License-Open--Core%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
+
+> **📢 Important Notice (v2.0 vs. v3.0 Evolution):** `MCP-Sentry v2.0.0` was almost completely free. With the major evolutionary leap in **`MCP-Sentry v3.0.0`** (1-Click Time-Machine File Rollback, Smart USD Token Diet, Self-Evolving Behavioral Immunity & Signed SOC2 Compliance Dossiers), **all evolutionary production features are strictly commercial and require a paid Pro License ($49) or the $30,000 Full IP & Master Keygen Buyout.**
 
 ---
 
@@ -26,9 +28,9 @@
 
 ---
 
-## 💎 Community vs. Pro ($49) vs. Full IP Buyout ($24,800)
+## 💎 Community vs. Pro ($49) vs. Full IP Buyout ($30,000)
 
-| Capability | Community (Free Eval) | ⚡ Developer Pro ($49 One-Time) | 🏛️ Enterprise / Full IP Buyout ($24,800) |
+| Capability | Community (Free Eval) | ⚡ Developer Pro ($49 One-Time) | 🏛️ Enterprise / Full IP Buyout ($30,000) |
 | :--- | :---: | :---: | :---: |
 | 24-Vector OWASP MCP Threat Firewall (`stdio` + `HTTP`) | ✅ Unlimited | ✅ Unlimited | ✅ Unlimited + White-Label IP |
 | **⏪ ShadowVault Time-Machine File Rollback** | 1 file / session (Eval) | **✅ Unlimited Files & Sessions** | **✅ Unlimited + Fleet Sync** |
@@ -38,7 +40,7 @@
 | **Commercial SaaS Redistribution & Master Keygen** | ❌ Prohibited | Single-Org Production Use | **✅ 100% Exclusive IP & Master Keygen** |
 
 - 👉 **Unlock Developer Pro ($49 One-Time — Pays for itself in 1 week of saved Claude API tokens)**: [Instant PayPal Checkout](https://www.paypal.com/ncp/payment/7G6M6X7889A2Q)
-- 👉 **Acquire Full Turnkey IP & Master Keygen Vault ($24,800)**: [AgentWall M&A Sandbox & Console](https://pingguye.cn/stackverdict/agentwall) or email **yepinggu6@gmail.com**
+- 👉 **Acquire Full Turnkey IP & Master Keygen Vault ($30,000)**: [AgentWall M&A Sandbox & Console](https://pingguye.cn/stackverdict/agentwall) or email **yepinggu6@gmail.com**
 
 ---
 

@@ -268,7 +268,7 @@ class AuditLedger:
               <div style="margin-top:6px;font-size:13px;">Remove evaluation watermarks, unlock persistent Self-Evolving Immunity Genome, and enable unlimited Time-Machine Rollbacks:</div>
               <div style="margin-top:12px;">
                 <a href="{PAYPAL_PRO_URL}" style="background:#10b981;color:#022c22;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:800;font-size:13px;margin-right:10px;">⚡ Unlock Pro License ($49 One-Time)</a>
-                <a href="{BUYOUT_CONSOLE_URL}" style="background:#3b82f6;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:800;font-size:13px;">🏛️ Full IP &amp; Turnkey Buyout ($24,800)</a>
+                <a href="{BUYOUT_CONSOLE_URL}" style="background:#3b82f6;color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none;font-weight:800;font-size:13px;">🏛️ Full IP &amp; Turnkey Buyout ($30,000)</a>
               </div>
             </div>"""
 

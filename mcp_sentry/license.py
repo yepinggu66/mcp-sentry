@@ -15,7 +15,7 @@ Tiers:
       * Persistent Self-Evolving Immunity Genome + 65-Signature Enterprise Genome Pack
       * Unwatermarked SOC2 / EU AI Act Signed Compliance Certificates
       * Mid-Session Rug-Pull Schema Drift Interactive Diff & Re-Pin Approval
-  - ENTERPRISE ($9,800 Commercial / $24,800 Full IP Buyout: SENTRY-V3-ENT-...):
+  - ENTERPRISE ($9,800 Commercial / $30,000 Full IP Buyout: SENTRY-V3-ENT-...):
       * All Pro entitlements + Multi-Tenant Fleet enforcement, White-Label Redistribution rights,
         and custom SIEM/OTLP signed ledger export.
 """
