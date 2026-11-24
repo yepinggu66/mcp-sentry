@@ -6,6 +6,7 @@
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0%20(Pure%20Python)-blue.svg)](#quick-start)
 [![Benchmark](https://img.shields.io/badge/red--team%20benchmark-24%2F24%20blocked-brightgreen.svg)](#24-vector-red-team-benchmark)
 [![License](https://img.shields.io/badge/License-Open--Core%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
+[![yepinggu66/mcp-sentry MCP server](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry/badges/score.svg)](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry)
 
 > **📢 Important Notice (v2.0 vs. v3.0 Evolution):** `MCP-Sentry v2.0.0` was almost completely free. With the major evolutionary leap in **`MCP-Sentry v3.0.0`** (1-Click Time-Machine File Rollback, Smart USD Token Diet, Self-Evolving Behavioral Immunity & Signed SOC2 Compliance Dossiers), **all evolutionary production features are strictly commercial and require a paid Pro License ($49) or the $30,000 Full IP & Master Keygen Buyout.**
 
