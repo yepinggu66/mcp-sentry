@@ -16,6 +16,15 @@ class SentryPolicy:
     loop_window_seconds: float = 60.0
     max_session_calls: int = 200
     max_calls_per_minute: int = 60
+    max_session_usd: float = 5.0
+    max_response_chars: int = 6000
+    enable_payload_diet: bool = True
+
+    # v3.0 Evolutionary Defense & Commercial License
+    enable_shadow_vault: bool = True
+    enable_adaptive_immunity: bool = True
+    enable_canary_honeypot: bool = True
+    license_key: str = ""
 
     # Threat engine toggles
     block_tool_poisoning: bool = True
@@ -87,6 +96,13 @@ class SentryPolicy:
             "loop_window_seconds": self.loop_window_seconds,
             "max_session_calls": self.max_session_calls,
             "max_calls_per_minute": self.max_calls_per_minute,
+            "max_session_usd": self.max_session_usd,
+            "max_response_chars": self.max_response_chars,
+            "enable_payload_diet": self.enable_payload_diet,
+            "enable_shadow_vault": self.enable_shadow_vault,
+            "enable_adaptive_immunity": self.enable_adaptive_immunity,
+            "enable_canary_honeypot": self.enable_canary_honeypot,
+            "license_key": self.license_key,
             "block_tool_poisoning": self.block_tool_poisoning,
             "block_rug_pull": self.block_rug_pull,
             "block_destructive_commands": self.block_destructive_commands,

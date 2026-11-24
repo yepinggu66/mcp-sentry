@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-sentry"
-version = "2.1.1"
-description = "Zero-Trust Security Gateway, Bidirectional Firewall & Cryptographic Audit Proxy for Model Context Protocol (MCP)"
+version = "3.0.0"
+description = "Self-Evolving Zero-Trust Security Gateway, Time-Machine Rollback, USD Budget Crusher & Cryptographic Audit Proxy for MCP"
 readme = "README.md"
 authors = [{ name = "Ye Yongping", email = "yepinggu66@gmail.com" }]
-license = { text = "MIT" }
+license = { text = "Dual-License (Open-Core MIT Evaluation + Commercial Pro/Enterprise)" }
 keywords = [
     "mcp",
     "model-context-protocol",
