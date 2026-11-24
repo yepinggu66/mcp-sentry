@@ -8,7 +8,7 @@ version = "3.0.0"
 description = "Self-Evolving Zero-Trust Security Gateway, Time-Machine Rollback, USD Budget Crusher & Cryptographic Audit Proxy for MCP"
 readme = "README.md"
 authors = [{ name = "Ye Yongping", email = "yepinggu66@gmail.com" }]
-license = { text = "Dual-License (Open-Core MIT Evaluation + Commercial Pro/Enterprise)" }
+license = { text = "MIT" }
 keywords = [
     "mcp",
     "model-context-protocol",
