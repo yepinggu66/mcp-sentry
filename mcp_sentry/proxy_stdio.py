@@ -16,7 +16,9 @@ from typing import Any, Dict, List, Optional
 
 from .circuit_breaker import CircuitBreaker
 from .detectors import SchemaLockStore, ThreatEngine
+from .evolution import AdaptiveImmunityEngine, CanaryHoneypot, ShadowVault, TokenDietEngine
 from .ledger import AuditLedger
+from .license import verify_license_key
 from .policy import PolicyManager
 
 
@@ -53,6 +55,23 @@ def run_stdio_proxy(
         max_session_calls=pol.max_session_calls,
         max_calls_per_minute=pol.max_calls_per_minute,
     )
+    lic = verify_license_key(pol.license_key or None)
+    shadow_vault = ShadowVault(
+        vault_dir=os.path.join(ledger.log_dir, "shadow_vault"),
+        license_status=lic,
+    )
+    token_diet = TokenDietEngine(
+        max_session_usd=pol.max_session_usd,
+        max_response_chars=pol.max_response_chars,
+        enable_payload_diet=pol.enable_payload_diet,
+        license_status=lic,
+    )
+    immunity = AdaptiveImmunityEngine(
+        genome_path=os.path.join(ledger.log_dir, "immunity_genome.json"),
+        license_status=lic,
+    )
+    honeypot = CanaryHoneypot()
+    honeypot.mint_canary_env(session_id=session_id)
 
     # Track pending request IDs so we can inspect corresponding Server -> Client responses
     pending_requests: Dict[Any, Dict[str, Any]] = {}
@@ -64,7 +83,9 @@ def run_stdio_proxy(
             sys.stdout.buffer.write(data)
             sys.stdout.buffer.flush()
 
-    sys.stderr.write(f"[MCP-Sentry v2.0.0] Bidirectional stdio guard active (session={session_id})\n")
+    sys.stderr.write(
+        f"[MCP-Sentry v3.0.0] Bidirectional stdio guard active (session={session_id}, tier={lic.tier})\n"
+    )
     sys.stderr.write(f"[MCP-Sentry] Wrapping: {' '.join(target_cmd)}\n")
     sys.stderr.write(f"[MCP-Sentry] Audit ledger: {ledger.jsonl_path}\n")
 
@@ -137,12 +158,13 @@ def run_stdio_proxy(
                             write_client((json.dumps(msg, ensure_ascii=False) + "\n").encode("utf-8"))
                             continue
 
-                # 2. Inspect `tools/call` responses for Secret Redaction & Taint Tracking
+                # 2. Inspect `tools/call` responses for Secret Redaction, Taint Tracking & Smart Payload Diet
                 if req_meta and req_meta.get("method") == "tools/call" and "result" in msg:
                     tname = req_meta.get("tool", "unknown")
                     sanitized, redacted_rules = engine.inspect_and_redact_response(
                         tname, msg["result"], session_id=session_id, policy=cur_policy
                     )
+                    modified_resp = False
                     if redacted_rules:
                         sys.stderr.write(
                             f"[MCP-Sentry REDACTED] Scrubbed {redacted_rules} from '{tname}' output & tainted session\n"
@@ -158,6 +180,21 @@ def run_stdio_proxy(
                             payload={"rules": redacted_rules},
                         )
                         msg["result"] = sanitized
+                        modified_resp = True
+
+                    compressed_res, diet_metrics = token_diet.inspect_and_compress_response(
+                        tname, msg["result"], session_id=session_id
+                    )
+                    if diet_metrics.diet_applied:
+                        sys.stderr.write(
+                            f"[MCP-Sentry SMART DIET] Compressed bloated '{tname}' output (Total saved: ${diet_metrics.session_usd_saved:.4f} USD)\n"
+                        )
+                        msg["result"] = compressed_res
+                        modified_resp = True
+                    if diet_metrics.commercial_notice:
+                        sys.stderr.write(f"{diet_metrics.commercial_notice}\n")
+
+                    if modified_resp:
                         write_client((json.dumps(msg, ensure_ascii=False) + "\n").encode("utf-8"))
                         continue
 
@@ -199,12 +236,58 @@ def run_stdio_proxy(
                 tool_name = str(params.get("name", "unknown"))
                 tool_args = params.get("arguments", {})
 
+                # 0a. Active Canary Honeypot trap check
+                if cur_policy.enable_canary_honeypot:
+                    trapped, trap_reason = honeypot.inspect_for_canary_exfil(
+                        tool_name, tool_args, session_id=session_id
+                    )
+                    if trapped:
+                        sys.stderr.write(f"[MCP-Sentry HONEYPOT TRAP] {trap_reason}\n")
+                        ledger.record(
+                            event_type="TOOL_CALL",
+                            action="BLOCK",
+                            tool_name=tool_name,
+                            category="CANARY_HONEYPOT_TRAP",
+                            severity="CRITICAL",
+                            reason=trap_reason,
+                            session_id=session_id,
+                        )
+                        write_client(
+                            _jsonrpc_error_result(req_id, f"[MCP-Sentry CANARY HONEYPOT TRAP]: {trap_reason}")
+                        )
+                        continue
+
+                # 0b. Self-Evolving Adaptive Immunity check
+                if cur_policy.enable_adaptive_immunity:
+                    matched_gene = immunity.inspect_call(tool_name, tool_args)
+                    if matched_gene is not None:
+                        reason = f"Blocked by Self-Evolving Immunity Gene {matched_gene.gene_id} ({matched_gene.category})"
+                        sys.stderr.write(f"[MCP-Sentry IMMUNITY BLOCK] {reason}\n")
+                        ledger.record(
+                            event_type="TOOL_CALL",
+                            action="BLOCK",
+                            tool_name=tool_name,
+                            category=matched_gene.category,
+                            severity=matched_gene.severity,
+                            reason=reason,
+                            session_id=session_id,
+                            payload={"gene_id": matched_gene.gene_id},
+                        )
+                        write_client(_jsonrpc_error_result(req_id, f"[MCP-Sentry ADAPTIVE IMMUNITY]: {reason}"))
+                        continue
+
                 # 1. Threat Engine inspection
                 verdict = engine.inspect_tool_call(
                     tool_name, tool_args, session_id=session_id, policy=cur_policy
                 )
                 if not verdict.allowed and verdict.action == "BLOCK":
                     sys.stderr.write(f"[MCP-Sentry BLOCKED] ({verdict.category}) {verdict.reason}\n")
+                    if cur_policy.enable_adaptive_immunity:
+                        gene, evo_notice = immunity.evolve_from_incident(
+                            tool_name, tool_args, verdict.category, verdict.severity
+                        )
+                        if evo_notice:
+                            sys.stderr.write(f"{evo_notice}\n")
                     ledger.record(
                         event_type="TOOL_CALL",
                         action="BLOCK",
@@ -224,7 +307,7 @@ def run_stdio_proxy(
                     )
                     continue
 
-                # 2. Circuit Breaker & Budget check
+                # 2. Circuit Breaker & USD Token Budget check
                 bstate = breaker.check_and_record(tool_name, tool_args, session_id=session_id)
                 if not bstate.allowed:
                     sys.stderr.write(f"[MCP-Sentry CIRCUIT TRIPPED] {bstate.reason}\n")
@@ -245,6 +328,33 @@ def run_stdio_proxy(
                         )
                     )
                     continue
+
+                usd_state = token_diet.check_and_account_request(tool_name, tool_args, session_id=session_id)
+                if not usd_state.allowed:
+                    sys.stderr.write(f"[MCP-Sentry USD BUDGET TRIPPED] {usd_state.reason}\n")
+                    ledger.record(
+                        event_type="TOOL_CALL",
+                        action="BLOCK",
+                        tool_name=tool_name,
+                        category="USD_BUDGET_TRIPPED",
+                        severity="HIGH",
+                        reason=usd_state.reason,
+                        session_id=session_id,
+                    )
+                    write_client(_jsonrpc_error_result(req_id, f"[MCP-Sentry USD BUDGET BREAKER]: {usd_state.reason}"))
+                    continue
+
+                # 3. Pre-execution ShadowVault Time-Machine snapshot for mutating tools
+                if cur_policy.enable_shadow_vault:
+                    snaps, snap_notice = shadow_vault.snapshot_before_call(
+                        tool_name, tool_args, session_id=session_id
+                    )
+                    if snaps:
+                        sys.stderr.write(
+                            f"[MCP-Sentry ShadowVault] Snapshotted {len(snaps)} file(s) before '{tool_name}' (Rollback ready: `mcp-sentry rollback --session {session_id}`)\n"
+                        )
+                    if snap_notice:
+                        sys.stderr.write(f"{snap_notice}\n")
 
                 ledger.record(
                     event_type="TOOL_CALL",

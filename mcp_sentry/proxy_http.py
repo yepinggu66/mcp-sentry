@@ -15,7 +15,9 @@ from typing import Any, Dict, Optional
 
 from .circuit_breaker import CircuitBreaker
 from .detectors import SchemaLockStore, ThreatEngine
+from .evolution import AdaptiveImmunityEngine, CanaryHoneypot, ShadowVault, TokenDietEngine
 from .ledger import AuditLedger
+from .license import BUYOUT_CONSOLE_URL, PAYPAL_PRO_URL, verify_license_key
 from .policy import PolicyManager
 
 
@@ -24,17 +26,19 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MCP-Sentry v2.0 — Live Zero-Trust Firewall & HITL Console</title>
+<title>MCP-Sentry v3.0 — Self-Evolving Firewall, Time-Machine &amp; HITL Console</title>
 <style>
   body { margin:0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background:#0b1120; color:#e2e8f0; }
   header { display:flex; justify-content:space-between; align-items:center; padding:16px 24px; background:#0f172a; border-bottom:1px solid #1e293b; }
   .badge { padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; background:#065f46; color:#34d399; }
-  .wrap { max-width:1200px; margin:24px auto; padding:0 20px; }
-  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
-  .card { background:#111827; border:1px solid #1f2937; border-radius:10px; padding:16px; }
-  .kpi { font-size:26px; font-weight:800; margin-top:6px; }
-  h2 { font-size:15px; color:#94a3b8; margin:20px 0 10px; text-transform:uppercase; letter-spacing:.05em; }
-  table { width:100%; border-collapse:collapse; background:#111827; border:1px solid #1f2937; border-radius:10px; overflow:hidden; font-size:13px; }
+  .paywall-bar { background:linear-gradient(90deg,#451a03,#78350f); border-bottom:1px solid #f59e0b; padding:10px 24px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#fef3c7; }
+  .paywall-bar a, .btn-act { text-decoration:none; padding:6px 12px; border-radius:6px; font-weight:800; font-size:12px; margin-left:8px; display:inline-block; cursor:pointer; border:none; }
+  .wrap { max-width:1240px; margin:20px auto; padding:0 20px; }
+  .grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:20px; }
+  .card { background:#111827; border:1px solid #1f2937; border-radius:10px; padding:14px; }
+  .kpi { font-size:22px; font-weight:800; margin-top:6px; }
+  h2 { font-size:14px; color:#94a3b8; margin:20px 0 10px; text-transform:uppercase; letter-spacing:.05em; display:flex; justify-content:space-between; align-items:center; }
+  table { width:100%; border-collapse:collapse; background:#111827; border:1px solid #1f2937; border-radius:10px; overflow:hidden; font-size:12px; }
   th, td { text-align:left; padding:10px 12px; border-bottom:1px solid #1f2937; }
   th { background:#0f172a; color:#94a3b8; }
   .ALLOW { color:#34d399; font-weight:700; }
@@ -47,16 +51,27 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 </style>
 </head>
 <body>
+<div class="paywall-bar" id="license-bar">
+  <div id="license-msg"><strong>⚠️ UNLICENSED COMMUNITY EVALUATION</strong> — Free tier caps ShadowVault at 1 file/session &amp; 3 Smart Diet compressions.</div>
+  <div>
+    <button class="btn-act" style="background:#f59e0b;color:#0f172a" onclick="triggerRollback()">⏪ 1-Click Time-Machine Rollback</button>
+    <a href="/sentry/api/soc2.html" target="_blank" style="background:#1e293b;color:#93c5fd;border:1px solid #3b82f6">📄 Export SOC2 Audit Certificate</a>
+    <a href="https://www.paypal.com/ncp/payment/7G6M6X7889A2Q" target="_blank" style="background:#10b981;color:#022c22">⚡ Unlock Pro ($49)</a>
+    <a href="https://pingguye.cn/stackverdict/agentwall" target="_blank" style="background:#3b82f6;color:#fff">🏛️ Full IP Buyout ($24,800)</a>
+  </div>
+</div>
 <header>
-  <div><strong>MCP-SENTRY v2.0</strong> <span style="color:#64748b">// Live Zero-Trust MCP Firewall &amp; Cryptographic Ledger</span></div>
+  <div><strong>MCP-SENTRY v3.0</strong> <span style="color:#64748b">// Self-Evolving Immunity · Time-Machine Rollback · USD Token Crusher</span></div>
   <div class="badge" id="status">LIVE GUARD ACTIVE</div>
 </header>
 <div class="wrap">
   <div class="grid">
-    <div class="card"><div style="color:#94a3b8;font-size:12px">TOTAL EVENTS</div><div class="kpi" id="k-total">0</div></div>
-    <div class="card"><div style="color:#94a3b8;font-size:12px">BLOCKED THREATS</div><div class="kpi" style="color:#f87171" id="k-block">0</div></div>
-    <div class="card"><div style="color:#94a3b8;font-size:12px">PENDING HITL APPROVALS</div><div class="kpi" style="color:#60a5fa" id="k-pending">0</div></div>
-    <div class="card"><div style="color:#94a3b8;font-size:12px">LEDGER INTEGRITY</div><div class="kpi" style="color:#34d399;font-size:18px" id="k-chain">VERIFIED</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">TOTAL EVENTS</div><div class="kpi" id="k-total">0</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">BLOCKED THREATS</div><div class="kpi" style="color:#f87171" id="k-block">0</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">USD SAVED (SMART DIET)</div><div class="kpi" style="color:#34d399" id="k-saved">$0.0000</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">EVOLVED IMMUNITY GENES</div><div class="kpi" style="color:#c084fc" id="k-genes">0</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">PENDING HITL APPROVALS</div><div class="kpi" style="color:#60a5fa" id="k-pending">0</div></div>
+    <div class="card"><div style="color:#94a3b8;font-size:11px">LEDGER INTEGRITY</div><div class="kpi" style="color:#34d399;font-size:16px" id="k-chain">VERIFIED</div></div>
   </div>
 
   <h2>Human-in-the-Loop Approval Gate (Suspended High-Risk Calls)</h2>
@@ -76,18 +91,31 @@ async function decide(id, decision) {
   await fetch('/sentry/api/' + decision + '?id=' + encodeURIComponent(id), { method: 'POST' });
   refresh();
 }
+async function triggerRollback() {
+  const res = await fetch('/sentry/api/rollback', { method: 'POST' });
+  const data = await res.json();
+  alert(data.message || JSON.stringify(data));
+  refresh();
+}
 async function refresh() {
   try {
-    const [evRes, penRes] = await Promise.all([
+    const [evRes, penRes, evoRes] = await Promise.all([
       fetch('/sentry/api/events'),
-      fetch('/sentry/api/pending')
+      fetch('/sentry/api/pending'),
+      fetch('/sentry/api/evolution')
     ]);
     const ev = await evRes.json();
     const pen = await penRes.json();
+    const evo = await evoRes.json();
     document.getElementById('k-total').textContent = ev.events.length;
     document.getElementById('k-block').textContent = ev.events.filter(x => x.action === 'BLOCK').length;
     document.getElementById('k-pending').textContent = pen.pending.length;
     document.getElementById('k-chain').textContent = ev.chain_valid ? 'CHAIN INTACT' : 'TAMPERED!';
+    document.getElementById('k-saved').textContent = '$' + (evo.cost.total_usd_saved || 0).toFixed(4);
+    document.getElementById('k-genes').textContent = (evo.genes || []).length;
+    if (evo.license && evo.license.is_paid) {
+      document.getElementById('license-msg').innerHTML = '<strong>✅ ' + evo.license.tier + ' LICENSE ACTIVE (' + evo.license.licensee + ')</strong> — Unlimited ShadowVault Rollbacks &amp; Self-Evolving Immunity Unlocked.';
+    }
 
     const pb = document.getElementById('pending-body');
     if (!pen.pending.length) {
@@ -279,6 +307,22 @@ def run_http_proxy(
         max_session_calls=pol.max_session_calls,
         max_calls_per_minute=pol.max_calls_per_minute,
     )
+    lic = verify_license_key(pol.license_key or None)
+    shadow_vault = ShadowVault(
+        vault_dir=os.path.join(ledger.log_dir, "shadow_vault"),
+        license_status=lic,
+    )
+    token_diet = TokenDietEngine(
+        max_session_usd=pol.max_session_usd,
+        max_response_chars=pol.max_response_chars,
+        enable_payload_diet=pol.enable_payload_diet,
+        license_status=lic,
+    )
+    immunity = AdaptiveImmunityEngine(
+        genome_path=os.path.join(ledger.log_dir, "immunity_genome.json"),
+        license_status=lic,
+    )
+    honeypot = CanaryHoneypot()
     approvals = ApprovalQueue()
 
     class SentryHTTPHandler(BaseHTTPRequestHandler):
@@ -312,6 +356,32 @@ def run_http_proxy(
                 self._send_json(200, {"pending": approvals.list_pending()})
                 return
 
+            if self.path == "/sentry/api/evolution":
+                self._send_json(
+                    200,
+                    {
+                        "license": {
+                            "tier": lic.tier,
+                            "is_paid": lic.is_paid,
+                            "licensee": lic.licensee,
+                            "reason": lic.reason,
+                        },
+                        "cost": token_diet.get_totals(),
+                        "genes": immunity.list_genes(),
+                        "shadow_sessions": shadow_vault.list_sessions(),
+                    },
+                )
+                return
+
+            if self.path == "/sentry/api/soc2.html":
+                html_doc = ledger.export_soc2_html(license_status=lic).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(html_doc)))
+                self.end_headers()
+                self.wfile.write(html_doc)
+                return
+
             if self.path == "/sentry/health":
                 self._send_json(200, {"status": "ok", "upstream": upstream_url})
                 return
@@ -329,6 +399,18 @@ def run_http_proxy(
                 aid = self.path.split("id=", 1)[1]
                 ok = approvals.decide(aid, False)
                 self._send_json(200 if ok else 404, {"ok": ok, "id": aid, "decision": "DENIED"})
+                return
+
+            if self.path == "/sentry/api/rollback":
+                res = shadow_vault.rollback_session()
+                ledger.record(
+                    event_type="SHADOW_VAULT_ROLLBACK",
+                    action="ALLOW" if res.get("ok") else "BLOCK",
+                    category="TIME_MACHINE_ROLLBACK",
+                    severity="HIGH",
+                    reason=res.get("message", ""),
+                )
+                self._send_json(200, res)
                 return
 
             length = int(self.headers.get("Content-Length", "0"))
@@ -351,10 +433,65 @@ def run_http_proxy(
                 tool_name = str(params.get("name", "unknown"))
                 tool_args = params.get("arguments", {})
 
+                if cur_policy.enable_canary_honeypot:
+                    trapped, trap_reason = honeypot.inspect_for_canary_exfil(
+                        tool_name, tool_args, session_id=session_id
+                    )
+                    if trapped:
+                        ledger.record(
+                            event_type="HTTP_TOOL_CALL",
+                            action="BLOCK",
+                            tool_name=tool_name,
+                            category="CANARY_HONEYPOT_TRAP",
+                            severity="CRITICAL",
+                            reason=trap_reason,
+                            session_id=session_id,
+                        )
+                        self._send_json(
+                            200,
+                            {
+                                "jsonrpc": "2.0",
+                                "id": req_id,
+                                "result": {
+                                    "content": [{"type": "text", "text": f"[MCP-Sentry HONEYPOT TRAP]: {trap_reason}"}],
+                                    "isError": True,
+                                },
+                            },
+                        )
+                        return
+
+                if cur_policy.enable_adaptive_immunity:
+                    matched_gene = immunity.inspect_call(tool_name, tool_args)
+                    if matched_gene is not None:
+                        reason = f"Blocked by Self-Evolving Immunity Gene {matched_gene.gene_id} ({matched_gene.category})"
+                        ledger.record(
+                            event_type="HTTP_TOOL_CALL",
+                            action="BLOCK",
+                            tool_name=tool_name,
+                            category=matched_gene.category,
+                            severity=matched_gene.severity,
+                            reason=reason,
+                            session_id=session_id,
+                        )
+                        self._send_json(
+                            200,
+                            {
+                                "jsonrpc": "2.0",
+                                "id": req_id,
+                                "result": {
+                                    "content": [{"type": "text", "text": f"[MCP-Sentry ADAPTIVE IMMUNITY]: {reason}"}],
+                                    "isError": True,
+                                },
+                            },
+                        )
+                        return
+
                 verdict = engine.inspect_tool_call(
                     tool_name, tool_args, session_id=session_id, policy=cur_policy
                 )
                 if not verdict.allowed and verdict.action == "BLOCK":
+                    if cur_policy.enable_adaptive_immunity:
+                        immunity.evolve_from_incident(tool_name, tool_args, verdict.category, verdict.severity)
                     ledger.record(
                         event_type="HTTP_TOOL_CALL",
                         action="BLOCK",
@@ -395,6 +532,8 @@ def run_http_proxy(
                         base_url=active_base,
                     )
                     if not approved:
+                        if cur_policy.enable_adaptive_immunity:
+                            immunity.evolve_from_incident(tool_name, tool_args, "HITL_DENIED", "HIGH")
                         ledger.record(
                             event_type="HTTP_HITL_GATE",
                             action="BLOCK",
@@ -442,6 +581,33 @@ def run_http_proxy(
                         },
                     )
                     return
+
+                usd_state = token_diet.check_and_account_request(tool_name, tool_args, session_id=session_id)
+                if not usd_state.allowed:
+                    ledger.record(
+                        event_type="HTTP_TOOL_CALL",
+                        action="BLOCK",
+                        tool_name=tool_name,
+                        category="USD_BUDGET_TRIPPED",
+                        severity="HIGH",
+                        reason=usd_state.reason,
+                        session_id=session_id,
+                    )
+                    self._send_json(
+                        200,
+                        {
+                            "jsonrpc": "2.0",
+                            "id": req_id,
+                            "result": {
+                                "content": [{"type": "text", "text": f"[MCP-Sentry USD BUDGET BREAKER]: {usd_state.reason}"}],
+                                "isError": True,
+                            },
+                        },
+                    )
+                    return
+
+                if cur_policy.enable_shadow_vault:
+                    shadow_vault.snapshot_before_call(tool_name, tool_args, session_id=session_id)
 
                 ledger.record(
                     event_type="HTTP_TOOL_CALL",
@@ -497,6 +663,12 @@ def run_http_proxy(
                                     session_id=session_id,
                                 )
                                 resp_json["result"] = sanitized
+                            compressed_res, diet_metrics = token_diet.inspect_and_compress_response(
+                                tname, resp_json["result"], session_id=session_id
+                            )
+                            if diet_metrics.diet_applied:
+                                resp_json["result"] = compressed_res
+                            if redacted or diet_metrics.diet_applied:
                                 resp_body = json.dumps(resp_json, ensure_ascii=False).encode("utf-8")
                     except Exception:
                         pass
@@ -510,8 +682,9 @@ def run_http_proxy(
                 self._send_json(502, {"error": f"Upstream MCP server unreachable: {e}"})
 
     httpd = ThreadingHTTPServer((host, port), SentryHTTPHandler)
-    print(f"[MCP-Sentry v2.0.0] HTTP/Streamable-HTTP Gateway listening on http://{host}:{port}")
-    print(f"[MCP-Sentry] Live Firewall & HITL Dashboard: http://{host}:{port}/sentry/ui")
+    print(f"[MCP-Sentry v3.0.0] HTTP/Streamable-HTTP Gateway listening on http://{host}:{port} (Tier: {lic.tier})")
+    print(f"[MCP-Sentry] Live Firewall, Time-Machine & HITL Console: http://{host}:{port}/sentry/ui")
+    print(f"[MCP-Sentry] SOC2 / EU AI Act Certificate Endpoint: http://{host}:{port}/sentry/api/soc2.html")
     print(f"[MCP-Sentry] Upstream MCP Server: {upstream_url}")
     try:
         httpd.serve_forever()
