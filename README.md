@@ -37,7 +37,7 @@ We believe in **Proof Under Real Fire**. MCP-Sentry v3.0.0 has been subjected to
 - **Average In-Line Latency:** `< 6 ms` (Zero noticeable impact on agent execution)
 - **Tamper-Evident Ledger:** `Zero cryptographic breaches (SHA-256 Merkle chain verified)`
 - 📄 **Read the Complete Audit Whitepaper**: [REDTEAM_AUDIT_REPORT.md](REDTEAM_AUDIT_REPORT.md)
-- 🖥️ **Live Interactive Security Dashboard**: [https://pingguye.cn/stackverdict/redteam.html](https://pingguye.cn/stackverdict/redteam.html)
+- 🖥️ **Live Interactive Security Dashboard**: [https://pingguye.cn/redteam.html](https://pingguye.cn/redteam.html)
 
 To reproduce the wargame on your local machine:
 ```bash
