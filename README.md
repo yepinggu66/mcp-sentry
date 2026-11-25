@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-3.0.0-emerald.svg)](https://github.com/yepinggu66/mcp-sentry/releases)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0%20(Pure%20Python)-blue.svg)](#quick-start)
-[![Benchmark](https://img.shields.io/badge/red--team%20benchmark-24%2F24%20blocked-brightgreen.svg)](#24-vector-red-team-benchmark)
+[![Benchmark](https://img.shields.io/badge/Red--Team%20Wargame-30%2F30%20(100%25)%20Blocked-brightgreen.svg)](REDTEAM_AUDIT_REPORT.md)
 [![License](https://img.shields.io/badge/License-Open--Core%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
 [![yepinggu66/mcp-sentry MCP server](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry/badges/score.svg)](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry)
 
@@ -26,6 +26,23 @@
    - Mints watermarked decoy credentials (`sk-proj-SENTRYCANARY...`, `AKIASENTRY...`) to bait untrusted MCP servers. Any outbound tool attempting to exfiltrate a canary token is caught with **0% false positives** and permanently quarantined.
 5. **📄 Cryptographic SOC2 / EU AI Act Compliance Dossier Exporter (`mcp-sentry audit --export-soc2 report.html`)**
    - Exports a self-contained, SHA-256 hash-chained & HMAC-signed HTML compliance report for security audits.
+
+---
+
+## 🛡️ Live 30-Vector Red-Team Wargame & Security Whitepaper
+
+We believe in **Proof Under Real Fire**. MCP-Sentry v3.0.0 has been subjected to a live 30-vector offensive Red-Team penetration test, covering Tool Poisoning, Prompt Injection, Rug-Pull schema drift, Ransomware file overwrite, Token-drain DoS, and Honeypot traps:
+
+- **Defense Rate:** `100.0% (30 / 30 threats intercepted or safely restored)`
+- **Average In-Line Latency:** `< 6 ms` (Zero noticeable impact on agent execution)
+- **Tamper-Evident Ledger:** `Zero cryptographic breaches (SHA-256 Merkle chain verified)`
+- 📄 **Read the Complete Audit Whitepaper**: [REDTEAM_AUDIT_REPORT.md](REDTEAM_AUDIT_REPORT.md)
+- 🖥️ **Live Interactive Security Dashboard**: [https://pingguye.cn/stackverdict/redteam.html](https://pingguye.cn/stackverdict/redteam.html)
+
+To reproduce the wargame on your local machine:
+```bash
+python scripts/redteam_wargame.py
+```
 
 ---
 

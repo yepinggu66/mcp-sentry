@@ -7,6 +7,7 @@ Repository: https://github.com/yepinggu66/mcp-sentry
 """
 
 VERSION = "3.0.0"
+__version__ = VERSION
 
 from .policy import SentryPolicy, PolicyManager
 from .detectors import ThreatEngine, ThreatVerdict, SchemaLockStore

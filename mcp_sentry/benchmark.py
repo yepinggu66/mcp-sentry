@@ -162,4 +162,5 @@ def run_benchmark(verbose: bool = True) -> Dict[str, object]:
         "block_rate_pct": round((passed / total) * 100.0, 2),
         "avg_latency_ms": round(avg_ms, 3),
         "max_latency_ms": round(p99_ms, 3),
+        "details": results,
     }
