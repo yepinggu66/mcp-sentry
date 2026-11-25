@@ -5,7 +5,9 @@
 [![Version](https://img.shields.io/badge/version-3.0.0-emerald.svg)](https://github.com/yepinggu66/mcp-sentry/releases)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0%20(Pure%20Python)-blue.svg)](#quick-start)
 [![Benchmark](https://img.shields.io/badge/Red--Team%20Wargame-30%2F30%20(100%25)%20Blocked-brightgreen.svg)](REDTEAM_AUDIT_REPORT.md)
-[![License](https://img.shields.io/badge/License-Open--Core%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
+[![Security Challenge](https://img.shields.io/badge/Security%20Challenge-Open%20%F0%9F%8F%86-purple.svg)](SECURITY_CHALLENGE.md)
+[![Hall of Fame](https://img.shields.io/badge/Hall%20of%20Fame-Active-gold.svg)](HALL_OF_FAME.md)
+[![License](https://img.shields.io/badge/License-MIT%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
 [![yepinggu66/mcp-sentry MCP server](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry/badges/score.svg)](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry)
 
 > **📢 Important Notice (v2.0 vs. v3.0 Evolution):** `MCP-Sentry v2.0.0` was almost completely free. With the major evolutionary leap in **`MCP-Sentry v3.0.0`** (1-Click Time-Machine File Rollback, Smart USD Token Diet, Self-Evolving Behavioral Immunity & Signed SOC2 Compliance Dossiers), **all evolutionary production features are strictly commercial and require a paid Pro License ($49) or the $30,000 Full IP & Master Keygen Buyout.**
@@ -43,6 +45,11 @@ To reproduce the wargame on your local machine:
 ```bash
 python scripts/redteam_wargame.py
 ```
+
+### ⚔️ Open Red-Team Challenge & Hall of Fame
+Think you can break our runtime guardrails, exfiltrate the planted Canary Honeytoken, or bypass ShadowVault file rollback?  
+👉 **Join the Challenge:** [SECURITY_CHALLENGE.md](SECURITY_CHALLENGE.md)  
+👉 **Security Hall of Fame:** [HALL_OF_FAME.md](HALL_OF_FAME.md) (Earn a permanent spot + lifetime Pro license!)
 
 ---
 
