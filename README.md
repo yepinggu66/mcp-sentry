@@ -9,6 +9,10 @@
 [![Hall of Fame](https://img.shields.io/badge/Hall%20of%20Fame-Active-gold.svg)](HALL_OF_FAME.md)
 [![License](https://img.shields.io/badge/License-MIT%20%2F%20Commercial-amber.svg)](#community-vs-pro-49-vs-full-ip-buyout-30000)
 [![yepinggu66/mcp-sentry MCP server](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry/badges/score.svg)](https://glama.ai/mcp/servers/yepinggu66/mcp-sentry)
+[![Buy Pro](https://img.shields.io/badge/Instant%20Unlock-Pro%20License%20%2449-blue?style=flat&logo=paypal)](https://www.paypal.com/ncp/payment/7G6M6X7889A2Q)
+[![M&A Buyout](https://img.shields.io/badge/SideProjectors-%2430%2C000%20Full%20IP%20Buyout-gold?style=flat)](https://www.sideprojectors.com/project/112053/mcp-sentry-v300-and-sovereign-icebreaker-ai-suite)
+
+> ⚡ **[Unlock Developer Pro ($49 Instant PayPal)](https://www.paypal.com/ncp/payment/7G6M6X7889A2Q)** · 🏛️ **[Acquire Full $30,000 Turnkey IP on SideProjectors](https://www.sideprojectors.com/project/112053/mcp-sentry-v300-and-sovereign-icebreaker-ai-suite)** · 🌐 **[Live Web Sandbox](https://pingguye.cn/stackverdict/agentwall)**
 
 > **📢 Important Notice (v2.0 vs. v3.0 Evolution):** `MCP-Sentry v2.0.0` was almost completely free. With the major evolutionary leap in **`MCP-Sentry v3.0.0`** (1-Click Time-Machine File Rollback, Smart USD Token Diet, Self-Evolving Behavioral Immunity & Signed SOC2 Compliance Dossiers), **all evolutionary production features are strictly commercial and require a paid Pro License ($49) or the $30,000 Full IP & Master Keygen Buyout.**
 
